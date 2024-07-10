@@ -15,23 +15,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const authResponse = await axios.post(`${API_BASE_URL}/api/authenticate`, {
+      const authResponse = await axios.post(`${API_BASE_URL}/api/users/authenticate`, {
         username: username,
         password: password,
       });
 
       if (authResponse.status === 200) {
-        // Segunda llamada para obtener datos completos del usuario
-        const userResponse = await axios.get(`${API_BASE_URL}/api/user/${username}`);
+        const userResponse = await axios.get(`${API_BASE_URL}/api/users/${username}`);
 
         if (userResponse.status === 200) {
-          const {key, name, mail, location } = userResponse.data;
-          const userData = { name, mail, location };
+          const { name, mail, location, realName, reports } = userResponse.data;
+          const userData = { name, mail, location, realName, reports };
 
-          // Guardar datos de usuario en AsyncStorage
+          console.log(userData);  // Añade esta línea para verificar los datos
+
           await AsyncStorage.setItem('userData', JSON.stringify(userData));
 
-          // Redirigir a la aplicación principal
           navigation.reset({
             index: 0,
             routes: [{ name: 'MainApp' }],

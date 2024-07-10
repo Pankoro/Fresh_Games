@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import getHealth from './health/health'
-import users from './user/user'
+import userRoutes from './user/user'
 import comments from './comments/comments'
 import publicaciones from './publicaciones/publicaciones'
 //import {removeUser} from './user/user'
@@ -9,16 +9,17 @@ const router = new Router()
 
 router.get('/health', getHealth)
 
-//USERS
-router.get('/api/users', users.getAllUsers)
-router.get('/api/user/:nameUser', users.getUser)
-router.get('/api/user/mail/:nameUser', users.getMail)
-router.get('/api/user/mail/:nameUser/:mail', users.getUserWithTwoParams)
-router.post('/api/user', users.createUser)
-router.put('/api/userupdate/:nameUser', users.updateUser)
-router.delete('/api/user/:userMail', users.removeUser)
-router.post('/api/authenticate',users.authenticate)
-router.get('/api/user/checkname/:name', users.checkDuplicateUser)
+// Users
+router.get('/api/users', userRoutes.getAllUsers);
+router.get('/api/users/:nameUser', userRoutes.getUser);
+router.get('/api/users/:nameUser/mail', userRoutes.getMail);
+router.get('/api/users/:nameUser/:mail', userRoutes.getUserWithTwoParams);
+router.post('/api/users', userRoutes.createUser);
+router.put('/api/users/:nameUser', userRoutes.updateUser);
+router.delete('/api/users/:userMail', userRoutes.removeUser);
+router.post('/api/users/authenticate', userRoutes.authenticate);
+router.get('/api/users/check-duplicate/:name', userRoutes.checkDuplicateUser);
+router.put('/api/users/:nameUser/increment-report', userRoutes.incrementUserReports);
 
 
 // COMMENTS

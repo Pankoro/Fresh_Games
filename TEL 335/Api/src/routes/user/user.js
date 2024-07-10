@@ -26,11 +26,14 @@ exports.getUserWithTwoParams = async (ctx) => {
 
 // CREATE
 exports.createUser = async (ctx) => {
-    if (!ctx.request.body.name || !ctx.request.body.password || !ctx.request.body.mail || !ctx.request.body.location) {
+    const { name, password, mail, location, realName } = ctx.request.body;
+
+    if (!name || !password || !mail || !location || !realName) {
         ctx.status = 400;
         ctx.body = { message: 'Debe incluir todos los campos' };
         return ctx;
     }
+
     await userActions.addUser(ctx.request.body);
     ctx.body = { message: 'User was created' };
     return ctx;
@@ -39,7 +42,7 @@ exports.createUser = async (ctx) => {
 // UPDATE
 exports.updateUser = async (ctx) => {
     const { nameUser } = ctx.params;
-    const { oldPassword, newPassword, newName, newMail, newLocation } = ctx.request.body;
+    const { oldPassword, newPassword, newName, newMail, newLocation, newRealName, newReports } = ctx.request.body;
 
     if (!nameUser || !oldPassword) {
         ctx.status = 400;
@@ -47,7 +50,7 @@ exports.updateUser = async (ctx) => {
         return ctx;
     }
 
-    const updateResult = await userActions.updateUser({ newPassword, newName, newMail, newLocation }, nameUser, oldPassword);
+    const updateResult = await userActions.updateUser({ newPassword, newName, newMail, newLocation, newRealName, newReports }, nameUser, oldPassword);
 
     if (updateResult === 1) {
         ctx.status = 200;
@@ -88,20 +91,37 @@ exports.authenticate = async (ctx) => {
 
 exports.checkDuplicateUser = async (ctx) => {
     const username = ctx.params.name;
-    //console.log(username)
+
     if (!username) {
         ctx.status = 400;
         ctx.body = { message: 'Por favor, ingrese un nombre de usuario y contraseña.' };
         return;
     }
-    const isNameTaken = await userActions.isUsernameTaken(username);
-    //console.log(isNameTaken)
 
-    if (!isNameTaken) {
-        ctx.status = 200;
-        ctx.body = { message: 'Nombre de usuario correcto', isNameTaken };
-    } else {
-        ctx.status = 200;
-        ctx.body = { message: 'Nombre de usuario ya existente', isNameTaken };
+    const isNameTaken = await userActions.isUsernameTaken(username);
+
+    ctx.status = 200;
+    ctx.body = { message: isNameTaken ? 'Nombre de usuario ya existente' : 'Nombre de usuario correcto', isNameTaken };
+}
+
+// Increment reports
+exports.incrementUserReports = async (ctx) => {
+    const username = ctx.params.nameUser;
+
+    if (!username) {
+        ctx.status = 400;
+        ctx.body = { message: 'Por favor, ingrese un nombre de usuario.' };
+        return;
     }
+
+    const updateResult = await userActions.incrementReports(username);
+
+    if (updateResult === 1) {
+        ctx.status = 200;
+        ctx.body = { message: 'El reporte fue incrementado' };
+    } else {
+        ctx.status = 400;
+        ctx.body = { message: 'Error al incrementar el reporte, el usuario no fue encontrado' };
+    }
+    return ctx;
 }

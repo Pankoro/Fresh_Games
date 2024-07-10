@@ -3,7 +3,6 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { API_BASE_URL } from '../config';
-import Constants from "expo-constants";
 
 type UserProfileScreenProps = {
   navigation: NavigationProp<any, any>;
@@ -17,7 +16,9 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation }) => 
       try {
         const userData = await AsyncStorage.getItem('userData');
         if (userData) {
-          setUser(JSON.parse(userData));
+          const parsedUserData = JSON.parse(userData);
+          console.log(parsedUserData); // Añade esta línea para verificar los datos recuperados
+          setUser(parsedUserData);
         } else {
           navigation.reset({
             index: 0,
@@ -55,19 +56,20 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ navigation }) => 
       <Text>Nombre: {user.name}</Text>
       <Text>Email: {user.mail}</Text>
       <Text>Ubicación: {user.location}</Text>
-      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-
+      <Text>Nombre Real: {user.realName}</Text>
+      <Text>Reportes: {user.reports}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
         <Button title="Editar Perfil" onPress={() => navigation.navigate('EditProfile')} />
         <Button title="Cerrar Sesión" onPress={handleLogout} />
       </View>
-      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16
+    padding: 16,
   },
   title: {
     fontSize: 24,

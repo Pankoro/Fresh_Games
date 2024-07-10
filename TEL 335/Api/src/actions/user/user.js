@@ -1,10 +1,10 @@
 const { MongoClient } = require('mongodb');
-const {v4: uuidv4} = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 
 const uri = 'mongodb://localhost:27017';
-const client = new MongoClient(uri, { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true 
+const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 
 async function connectToDatabase() {
@@ -20,9 +20,8 @@ async function connectToDatabase() {
 // Consultar todos los usuarios
 exports.getUsers = async () => {
     const collection = await connectToDatabase();
-    const user = await collection.findOne({ name: username })
-    //console.log(user)
-    return false
+    const users = await collection.find().toArray();
+    return users;
 }
 
 // Consultar por un usuario por nombre
@@ -46,7 +45,9 @@ exports.updateUser = async (updateData, oldNameUser, oldPassUser) => {
             ...(updateData.newName && { name: updateData.newName }),
             ...(updateData.newPassword && { password: updateData.newPassword }),
             ...(updateData.newMail && { mail: updateData.newMail }),
-            ...(updateData.newLocation && { location: updateData.newLocation })
+            ...(updateData.newLocation && { location: updateData.newLocation }),
+            ...(updateData.newRealName && { realName: updateData.newRealName }),
+            ...(updateData.newReports && { reports: updateData.newReports })
         }
     };
     const result = await collection.updateOne(filter, update);
@@ -61,7 +62,9 @@ exports.addUser = async (userData) => {
         name: userData.name,
         mail: userData.mail,
         password: userData.password,
-        location: userData.location
+        location: userData.location,
+        realName: userData.realName,
+        reports: 0 // Initialize reports to 0
     }
     const result = await collection.insertOne(user);
     return result.insertedId; // Return the ID of the inserted user
@@ -83,11 +86,16 @@ exports.authenticate = async (username, password) => {
 // Verificar si un nombre de usuario ya existe
 exports.isUsernameTaken = async (username) => {
     const collection = await connectToDatabase();
-    const nombre = await collection.findOne({ name: username })
-    if(nombre==null){
-        return false
-    }
-    else{
-        return true
-    }
+    const user = await collection.findOne({ name: username });
+    return user !== null;
+}
+
+// Incrementar el contador de reportes de un usuario
+exports.incrementReports = async (username) => {
+    const collection = await connectToDatabase();
+    const result = await collection.updateOne(
+        { name: username },
+        { $inc: { reports: 1 } }
+    );
+    return result.modifiedCount; // 1 if successful, 0 if not found
 }

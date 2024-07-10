@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {RouteProp, useFocusEffect, useNavigation} from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { API_BASE_URL } from '../config';
@@ -27,7 +27,7 @@ type Post = {
   DueñoDelJuego: string;
   valoracion: string;
   ventaOcambio: string;
-  valor:string;
+  valor: string;
   location: string;
   estado: string;
   info: string;
@@ -40,14 +40,13 @@ const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const [userPost,setUserPost]=useState(null)
 
-  const navigation2=useNavigation()
+  const navigation2 = useNavigation();
+
   const getCurrentUser = async () => {
     try {
       const userData = await AsyncStorage.getItem('userData');
       if (userData) {
-        //console.log(userData)
         const { name } = JSON.parse(userData);
         return name;
       }
@@ -95,12 +94,6 @@ const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }
     }, [postId])
   );
 
-  const navigateToUserDetail = (userName: string) => {
-    //console.log(userName)
-    navigation.navigate('OtherUser', { userName});
-  };
-
-
   const renderComment = ({ item }: { item: Comment }) => (
     <View style={styles.commentContainer}>
       <Text style={styles.commentUser}>{item.user}</Text>
@@ -120,7 +113,6 @@ const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }
   );
 
   const handleEditComment = (comment: Comment) => {
-    console.log('postId:', postId, 'commentId:', comment._id);
     navigation.navigate('EditComment', { postId, commentId: comment._id, commentText: comment.text });
   };
 
@@ -137,7 +129,6 @@ const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }
       setLoading(false);
     }
   };
-  
 
   if (loading) {
     return (
@@ -163,8 +154,11 @@ const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }
       ) : (
         <Text>No hay imagen disponible</Text>
       )}
-      <TouchableOpacity onPress={() => navigation2.navigate('OtherUser', {userId: post.DueñoDelJuego})} >
-        <Text style={styles.info}>Dueño del Juego: {post.DueñoDelJuego}</Text>
+      <TouchableOpacity onPress={() => navigation2.navigate('OtherUser', { userId: post.DueñoDelJuego })}>
+        <Text style={styles.info}>
+          Dueño del Juego:{' '}
+          <Text style={{ color: 'red' }}>{post.DueñoDelJuego} <Text style={{ fontSize: 10, color:'black' }}>Ver perfil dueño</Text></Text>
+        </Text>
       </TouchableOpacity>
       <Text style={styles.info}>Venta o Cambio: {post.ventaOcambio}</Text>
       <Text style={styles.info}>Valor: {post.valor}</Text>
@@ -193,7 +187,7 @@ const PostDetailScreen: React.FC<PostDetailScreenProps> = ({ route, navigation }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16
+    padding: 16,
   },
   loadingContainer: {
     flex: 1,

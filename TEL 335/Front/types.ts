@@ -1,5 +1,5 @@
 export type RootStackParamList = {
-  MainScreen: undefined; // Asegúrate de que este nombre coincida con el que has usado en MainStackNavigator
+  MainScreen: undefined;
   CreatePost: undefined;
   PostList: undefined;
   PostDetail: { postId: string };
@@ -9,7 +9,8 @@ export type RootStackParamList = {
   EditProfile: undefined;
   Search: undefined;
   UserValidation: undefined;
-  Auth: undefined; // Añadido para el AuthStackNavigator
-  MainApp: undefined; // Añadido para el MainStackNavigator en AppNavigator
-  EditComment: { postId: string; commentId: string; commentText: string};
+  Auth: undefined;
+  MainApp: undefined;
+  EditComment: { postId: string; commentId: string; commentText: string };
+  OtherUser: { userId: string ; userName: string}; 
 };
